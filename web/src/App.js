@@ -1,25 +1,20 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { Layout } from 'antd';
 import { Header, Footer, Content } from 'antd/es/layout/layout';
+import './index.css';
+import Head from './Head';
+import Body from './Body';
+import Foot from './Foot';
 
-function App(){
+// App component
+const App = () => {
+    const [bodyHeight, setBodyHeight] = useState(window.innerHeight - 64 - 64);
+
     return(
         <Layout>
-            <Header style={{
-                textAlign: 'center', color: '#fff', height: 64,
-                paddingInline: 50, lineHeight: '64px', backgroundColor: '#7dbcea'
-            }}> Header123123 </Header>
-
-            <Content style={{
-                textAlign: 'center', minHeight: 120, lineHeight: '120px',
-                color: '#fff', backgroundColor: '#108ee9'
-            }}> Header123123 </Content>
-
-            <Footer style={{
-                textAlign: 'center',
-                color: '#fff',
-                backgroundColor: '#7dbcea'
-            }}> Header123123 </Footer>
+            <Head />
+            <Body windowHeight={bodyHeight}/>
+            <Foot />
         </Layout>
     );
 }
