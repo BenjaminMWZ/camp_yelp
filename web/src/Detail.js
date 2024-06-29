@@ -1,8 +1,11 @@
-import { Col, Layout, Row, Divider, Rate, Carousel, Image, List, Typography, Button} from 'antd';
+import {useState} from 'react';
+import { Col, Layout, Row, Divider, Rate, Carousel, Image, List, Typography, Button, Modal, Input} from 'antd';
 import {useSearchParams, userSearch} from 'react-router-dom';
+import Maps from './Maps';
 
 const {Content} = Layout;
 const {Paragraph, Text} = Typography;
+const{TextArea} = Input;
 
 // Detail component
 const Detail = ({windowHeight}) => {
@@ -21,14 +24,14 @@ const Detail = ({windowHeight}) => {
                     <Divider plain>IMAGES SECTION</Divider>
                     <Images />
                     <Divider plain>MAPS SECTION</Divider> 
-                    <Maps />
+                    <Maps latlng={{lat:45, lng:114}} zoom={6}/>
                 </Col>
             </Row>
         </Content>
     );
 }
 
-// Detail component
+// Description component
 const Description = () => {
     return (
         <div>
@@ -47,7 +50,7 @@ const Description = () => {
 }
 
 const imgs = ["https://hips.hearstapps.com/hmg-prod/images/camping-ideas-1561136670.jpg?crop=1.00xw:0.753xh;0,0.186xh&resize=1200:*", "https://res.cloudinary.com/simpleview/image/upload/v1612993307/clients/texas/03_TX_MustangIsland_Horizontal_5479and5431th_2_RGB_461a6777-3285-46f3-b8c6-174d4e8ac4a1.jpg"]
-// Detail component
+// Iamges component
 const Images = () => {
     return (
         <div>
@@ -64,20 +67,26 @@ const comments = [
     {user:"Cathy", stars:2, time:"2024/06/28", comment:"good"},
     {user:"David", stars:3, time:"2024/06/28", comment:"wonderful"},
 ]
-// Detail component
+
+// Comments component
 const Comments = () => {
+   const [coms, setComs] = useState(comments);
+    const commentAddEventHandle = () => {
+        setComs([...coms]);
+    }
+
     return (
         <div>
             <List
-                header={<Button type="primary" size="small"> Comments</Button>}
+                header={<CommentButton addEventCallback={commentAddEventHandle} />}
                 bordered
                 size = "small"                
-                dataSource={comments}
+                dataSource={coms}
                 renderItem={(item) => (
                     <List.Item>
                         <Typography>
                             <Paragraph>
-                                <span>{item.user}</span>
+                                <span>Usename: {item.user}</span>
                                 <span style={{marginLeft: '20px'}}>rating: {item.stars}</span>
                                 <span style={{marginLeft: '20px'}}>time: {item.time}</span>
                             </Paragraph>
@@ -90,13 +99,53 @@ const Comments = () => {
     );
 }
 
-// Maps component
-const Maps = () => {
+// CommentButton component
+const CommentButton = ({addEventCallback}) => {
+    const [show, setShow] = useState(false);
+
+    const [user, setUser]  = useState("");
+    const [stars, setStar] = useState(0);
+    const [desc, setDesc] = useState("");
+
+    const handelShowModal = () => {
+        setUser("");
+        setStar(0);
+        setDesc("");
+        setShow(true);
+    }
+
+    const handelCancelModal = () => {
+        setShow(false);
+    }
+
+    const handelOKModal = () => {
+        console.log(user, stars, desc);
+        comments.push({user, stars, time: "2024/06/28", comment: desc});
+        addEventCallback();
+        setShow(false);
+    }
+    
     return (
         <div>
-            maps
+            <Button type="primary" size="small" onClick={handelShowModal}> Comments</Button>
+            <Modal title="Comments" open={show} onOk={handelOKModal} onCancel={handelCancelModal}>
+                <Row>
+                    <Col span={4}>Usename:</Col>
+                    <Col span={21}><Input size='small'  value={user} onChange={e=>{e.persist(); setUser(e.target.value);}}/></Col>
+                </Row>
+                <Row>
+                    <Col span={4}>Raiting:</Col>
+                    <Col span={21}><Rate value={stars} onChange={setStar}/></Col>
+                </Row>
+                <Row>
+                    <Col span={4}>Comments:</Col>
+                    <Col span={21}><TextArea rows={4} value={desc} onChange={e=>{e.persist(); setDesc(e.target.value);}} /></Col>
+                </Row>
+            </Modal>
         </div>
     );
 }
+
+
 
 export default Detail;
