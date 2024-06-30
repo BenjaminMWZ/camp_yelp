@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Layout, List, Card, Rate} from 'antd';
 import {Link} from 'react-router-dom';
+import axios from 'axios';
 
 const {Content} = Layout;
 const {Meta} = Card;
@@ -26,11 +27,27 @@ const Body = ({windowHeight}) => {
 
 // Camps component
 const Camps = () => {
+const [camps, setCamp] = useState([]);
+
+useEffect(()=>{
+    getCamps();
+}, []);
+
+// get data of home page
+const getCamps = async () => {
+    axios.get('api/list', {params:{}}).then((res)=>{
+        console.log(res);
+        setCamp(res.data.data);
+    }).catch((err)=>{
+        console.log(err);
+    });
+}
+
     return (
         <div style={{marginLeft: "35px", marginTop: "20px"}}>
         <List
         grid = {{column: 4}}
-            dataSource={data}
+            dataSource={camps}
             renderItem={item => (
                 <List.Item>
                     <Link target="_blank" to={{pathname:`/detail`, search:`id=${item.id}`}}>
